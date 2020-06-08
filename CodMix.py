@@ -15,21 +15,33 @@ Program Name: CodMix.py,  Description: Code Editor
     e-mail: mbhattacharjee432@gmail.com
 """
 
-import tkinter as tk
+import tkinter as Tk 
+from tkinter import ttk
+from ttkthemes import themed_tk as tk
+
+
+class MenuBar:
+    def __init__(self,parent):
+        menubar = Tk.Menu(parent.root)
+        parent.root.config(menu=menubar)
 
 
 class CodMix:
     def __init__(self,root):
         root.title("Untitled - CodMix")
         root.geometry("800x600")
-        self.textarea = tk.Text(root)
-        self.scroll = tk.Scrollbar(root, command=self.textarea.yview)
+        self.root=root
+        self.textarea = Tk.Text(root)
+        self.scroll = Tk.Scrollbar(root, command=self.textarea.yview)
         self.textarea.configure(yscrollcommand=self.scroll.set)
-        self.textarea.pack(side=tk.LEFT,fill=tk.BOTH,expand=True)
-        self.scroll.pack(side=tk.RIGHT,fill=tk.Y)
+        self.textarea.pack(side=Tk.LEFT,fill=Tk.BOTH,expand=True)
+        self.scroll.pack(side=Tk.RIGHT, fill=Tk.Y)
+        self.menubar=MenuBar(self)
 
 
 if __name__ == "__main__":
-    root = tk.Tk()
+    root = tk.ThemedTk()
+    root.get_themes()
+    root.set_theme("breeze")
     cm = CodMix(root)
     root.mainloop()
