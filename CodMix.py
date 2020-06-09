@@ -1,47 +1,100 @@
-"""
-Program Name: CodMix.py,  Description: Code Editor
-    Copyright (C) 2020  Mainak Bhattacharjee
+import tkinter as tk
 
-    Albus.py is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
 
-    Albus.py is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-    
-    e-mail: mbhattacharjee432@gmail.com
-"""
+class CodMix(tk.Frame):
+    def __init__(self, *args, **kwargs):
+        tk.Frame.__init__(self, *args, **kwargs)
+        self.text = CustomText(self)
+        root.title("Untitled - CodMix")
+        self.root=root
+        self.vsb = tk.Scrollbar(orient="vertical", command=self.text.yview)
+        self.text.configure(yscrollcommand=self.vsb.set)
+        self.text.tag_configure("bigfont", font=("Helvetica", "24", "bold"))
+        self.linenumbers = TextLineNumbers(self, width=30)
+        self.linenumbers.attach(self.text)
+        self.menubar=MenuBar(self)
 
-import tkinter as Tk 
-from tkinter import ttk
-from ttkthemes import themed_tk as tk
+        self.vsb.pack(side="right", fill="y")
+        self.linenumbers.pack(side="left", fill="y")
+        self.text.pack(side="right", fill="both", expand=True)
 
+        self.text.bind("<<Change>>", self._on_change)
+        self.text.bind("<Configure>", self._on_change)
+
+
+    def _on_change(self, event):
+        self.linenumbers.redraw()
+
+
+class CustomText(tk.Text):
+    def __init__(self, *args, **kwargs):
+        tk.Text.__init__(self,root)
+
+        # create a proxy for the underlying widget
+        self._orig = self._w + "_orig"
+        self.tk.call("rename", self._w, self._orig)
+        self.tk.createcommand(self._w, self._proxy)
+
+    def _proxy(self, *args):
+        # let the actual widget perform the requested action
+        cmd = (self._orig,) + args
+        result = self.tk.call(cmd)
+
+        # generate an event if something was added or deleted,
+        # or the cursor position changed
+        if (args[0] in ("insert", "replace", "delete") or
+            args[0:3] == ("mark", "set", "insert") or
+            args[0:2] == ("xview", "moveto") or
+            args[0:2] == ("xview", "scroll") or
+            args[0:2] == ("yview", "moveto") or
+            args[0:2] == ("yview", "scroll")
+        ):
+            self.event_generate("<<Change>>", when="tail")
+
+        # return what the actual widget returned
+        return result
+    # self.menubar = MenuBar(self)
+
+
+class TextLineNumbers(tk.Canvas):
+    def __init__(self, *args, **kwargs):
+        tk.Canvas.__init__(self, *args, **kwargs)
+        self.textwidget = None
+
+    def attach(self, text_widget):
+        self.textwidget = text_widget
+
+    def redraw(self, *args):
+        '''redraw line numbers'''
+        self.delete("all")
+
+        i = self.textwidget.index("@0,0")
+        while True:
+            dline = self.textwidget.dlineinfo(i)
+            if dline is None:
+                break
+            y = dline[1]
+            linenum = str(i).split(".")[0]
+            self.create_text(2, y, anchor="nw", text=linenum)
+            i = self.textwidget.index("%s+1line" % i)
 
 class MenuBar:
     def __init__(self,parent):
-        menubar = Tk.Menu(parent.root)
+        menubar = tk.Menu(parent.root)
         parent.root.config(menu=menubar)
 
+        file_dropdown = tk.Menu(menubar)
+        file_dropdown.add_command(label="New")
+        file_dropdown.add_command(label="Open")
+        file_dropdown.add_command(label="Save")
+        file_dropdown.add_command(label="Save As...")
+        file_dropdown.add_separator()
+        file_dropdown.add_command(label="Exit")
 
-class CodMix:
-    def __init__(self,root):
-        root.title("Untitled - CodMix")
-        root.geometry("800x600")
-        self.root=root
-        self.textarea = Tk.Text(root)
-        self.scroll = Tk.Scrollbar(root, command=self.textarea.yview)
-        self.textarea.configure(yscrollcommand=self.scroll.set)
-        self.textarea.pack(side=Tk.LEFT,fill=Tk.BOTH,expand=True)
-        self.scroll.pack(side=Tk.RIGHT, fill=Tk.Y)
-        self.menubar=MenuBar(self)
+        menubar.add_cascade(label="File", menu=file_dropdown)
 
 
 if __name__ == "__main__":
-    root = tk.ThemedTk()
-    root.get_themes()
-    root.set_theme("breeze")
-    cm = CodMix(root)
+    root = tk.Tk()
+    CodMix(root).pack(side="top", fill="both", expand=True)
     root.mainloop()
