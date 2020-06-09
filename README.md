@@ -1,3 +1,3 @@
 # CODMIX
 
-Licenced under [GPL Licence.](LICENSE)
+Licenced under [MIT Licence.](LICENSE)
