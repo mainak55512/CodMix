@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import ttk 
 
 
 class CodMix(tk.Frame):
@@ -90,8 +91,15 @@ class MenuBar:
         file_dropdown.add_command(label="Save As...")
         file_dropdown.add_separator()
         file_dropdown.add_command(label="Exit")
-
         menubar.add_cascade(label="File", menu=file_dropdown)
+        edit_dropdown = tk.Menu(menubar)
+        edit_dropdown.add_command(label="Undo")
+        edit_dropdown.add_command(label="Redo")
+        edit_dropdown.add_separator()
+        edit_dropdown.add_command(label="Cut")
+        edit_dropdown.add_command(label="Copy")
+        edit_dropdown.add_command(label="Paste")
+        menubar.add_cascade(label="Edit", menu=edit_dropdown)
 
 
 if __name__ == "__main__":
