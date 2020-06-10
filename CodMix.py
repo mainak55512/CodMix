@@ -102,6 +102,7 @@ class MenuBar:
 
 
 if __name__ == "__main__":
+    #main window
     root = tk.Tk()
     CodMix(root).pack(side="top", fill="both", expand=True)
     root.mainloop()
