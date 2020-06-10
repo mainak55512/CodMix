@@ -1,5 +1,4 @@
-import tkinter as tk
-from tkinter import ttk 
+import tkinter as tk 
 
 
 class CodMix(tk.Frame):
