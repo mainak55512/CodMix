@@ -1,4 +1,4 @@
-import tkinter as tk 
+import tkinter as tk
 
 
 class CodMix(tk.Frame):
@@ -6,13 +6,13 @@ class CodMix(tk.Frame):
         tk.Frame.__init__(self, *args, **kwargs)
         self.text = CustomText(self)
         root.title("Untitled - CodMix")
-        self.root=root
+        self.root = root
         self.vsb = tk.Scrollbar(orient="vertical", command=self.text.yview)
         self.text.configure(yscrollcommand=self.vsb.set)
         self.text.tag_configure("bigfont", font=("Helvetica", "24", "bold"))
         self.linenumbers = TextLineNumbers(self, width=30)
         self.linenumbers.attach(self.text)
-        self.menubar=MenuBar(self)
+        self.menubar = MenuBar(self)
 
         self.vsb.pack(side="right", fill="y")
         self.linenumbers.pack(side="left", fill="y")
@@ -21,14 +21,29 @@ class CodMix(tk.Frame):
         self.text.bind("<<Change>>", self._on_change)
         self.text.bind("<Configure>", self._on_change)
 
-
     def _on_change(self, event):
         self.linenumbers.redraw()
 
 
+    def set_win_name(self):
+        pass
+
+    def new_file(self):
+        pass
+
+    def open_file(self):
+        pass
+
+    def save(self):
+        pass
+
+    def save_as(self):
+        pass
+
+
 class CustomText(tk.Text):
     def __init__(self, *args, **kwargs):
-        tk.Text.__init__(self,root)
+        tk.Text.__init__(self, root)
 
         # create a proxy for the underlying widget
         self._orig = self._w + "_orig"
@@ -43,12 +58,12 @@ class CustomText(tk.Text):
         # generate an event if something was added or deleted,
         # or the cursor position changed
         if (args[0] in ("insert", "replace", "delete") or
-            args[0:3] == ("mark", "set", "insert") or
-            args[0:2] == ("xview", "moveto") or
-            args[0:2] == ("xview", "scroll") or
-            args[0:2] == ("yview", "moveto") or
-            args[0:2] == ("yview", "scroll")
-        ):
+                args[0:3] == ("mark", "set", "insert") or
+                args[0:2] == ("xview", "moveto") or
+                args[0:2] == ("xview", "scroll") or
+                args[0:2] == ("yview", "moveto") or
+                args[0:2] == ("yview", "scroll")
+            ):
             self.event_generate("<<Change>>", when="tail")
 
         # return what the actual widget returned
@@ -78,20 +93,21 @@ class TextLineNumbers(tk.Canvas):
             self.create_text(2, y, anchor="nw", text=linenum)
             i = self.textwidget.index("%s+1line" % i)
 
+
 class MenuBar:
-    def __init__(self,parent):
+    def __init__(self, parent):
         menubar = tk.Menu(parent.root)
         parent.root.config(menu=menubar)
 
-        file_dropdown = tk.Menu(menubar)
-        file_dropdown.add_command(label="New")
-        file_dropdown.add_command(label="Open")
-        file_dropdown.add_command(label="Save")
-        file_dropdown.add_command(label="Save As...")
+        file_dropdown = tk.Menu(menubar, tearoff=0)
+        file_dropdown.add_command(label="New", command=parent.new_file)
+        file_dropdown.add_command(label="Open", command=parent.open_file)
+        file_dropdown.add_command(label="Save", command=parent.save)
+        file_dropdown.add_command(label="Save As...", command=parent.save_as)
         file_dropdown.add_separator()
-        file_dropdown.add_command(label="Exit")
+        file_dropdown.add_command(label="Exit", command=parent.root.destroy)
         menubar.add_cascade(label="File", menu=file_dropdown)
-        edit_dropdown = tk.Menu(menubar)
+        edit_dropdown = tk.Menu(menubar, tearoff=0)
         edit_dropdown.add_command(label="Undo")
         edit_dropdown.add_command(label="Redo")
         edit_dropdown.add_separator()
@@ -102,7 +118,7 @@ class MenuBar:
 
 
 if __name__ == "__main__":
-    #main window
+    # main window
     root = tk.Tk()
     CodMix(root).pack(side="top", fill="both", expand=True)
     root.mainloop()
