@@ -94,10 +94,19 @@ class CodMix(tk.Frame):
         except Exception as e:
             print("!!!Something went wrong!!!")
 
+    def cut(self):
+        self.text.event_generate(("<<Cut>>"))
+
+    def copy(self):
+        self.text.event_generate(("<<Copy>>"))
+
+    def paste(self):
+        self.text.event_generate(("<<Paste>>"))
+
 
 class CustomText(tk.Text):
     def __init__(self, *args, **kwargs):
-        tk.Text.__init__(self, root)
+        tk.Text.__init__(self, root, undo=True)
 
         # create a proxy for the underlying widget
         self._orig = self._w + "_orig"
@@ -162,12 +171,12 @@ class MenuBar:
         file_dropdown.add_command(label="Exit", command=parent.root.destroy)
         menubar.add_cascade(label="File", menu=file_dropdown)
         edit_dropdown = tk.Menu(menubar, tearoff=0)
-        edit_dropdown.add_command(label="Undo")
-        edit_dropdown.add_command(label="Redo")
+        edit_dropdown.add_command(label="Undo", command=parent.text.edit_undo)
+        edit_dropdown.add_command(label="Redo", command=parent.text.edit_redo)
         edit_dropdown.add_separator()
-        edit_dropdown.add_command(label="Cut")
-        edit_dropdown.add_command(label="Copy")
-        edit_dropdown.add_command(label="Paste")
+        edit_dropdown.add_command(label="Cut", command=parent.cut)
+        edit_dropdown.add_command(label="Copy", command=parent.copy)
+        edit_dropdown.add_command(label="Paste", command=parent.paste)
         menubar.add_cascade(label="Edit", menu=edit_dropdown)
 
 
