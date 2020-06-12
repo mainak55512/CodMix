@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import filedialog as fd
 
 
 class CodMix(tk.Frame):
@@ -7,6 +8,7 @@ class CodMix(tk.Frame):
         self.text = CustomText(self)
         root.title("Untitled - CodMix")
         self.root = root
+        self.filename = None
         self.vsb = tk.Scrollbar(orient="vertical", command=self.text.yview)
         self.text.configure(yscrollcommand=self.vsb.set)
         self.text.tag_configure("bigfont", font=("Helvetica", "24", "bold"))
@@ -24,21 +26,73 @@ class CodMix(tk.Frame):
     def _on_change(self, event):
         self.linenumbers.redraw()
 
-
-    def set_win_name(self):
-        pass
+    def set_win_name(self, name=None):
+        if name:
+            self.root.title(name + " - CodMix")
+        else:
+            self.root.title("Untitled - CodMix")
 
     def new_file(self):
-        pass
+        self.text.delete(1.0, tk.END)
+        self.filename = None
+        self.set_win_name()
 
     def open_file(self):
-        pass
+        self.filename = fd.askopenfilename(
+            defaultextension=".txt",
+            filetypes=[("All Files", "*.*"),
+                       ("All Files", "*.txt"),
+                       ("Python file", "*.py"),
+                       ("C file", "*.c"),
+                       ("C++ file", "*.cpp"),
+                       ("Java file", "*.java"),
+                       ("Mark down files", "*.md"),
+                       ("HTML files", "*.html"),
+                       ("CSS files", "*.css"),
+                       ("JavaScript files", "*.js")
+                       ]
+        )
+        if self.filename:
+            self.text.delete(1.0, tk.END)
+            with open(self.filename, "r") as f:
+                self.text.insert(1.0, f.read())
+            self.set_win_name(self.filename)
 
     def save(self):
-        pass
+        if self.filename:
+            try:
+                text_content = self.text.get(1.0, tk.END)
+                with open(self.filename, "w") as f:
+                    f.write(text_content)
+            except Exception as e:
+                print("!!!Something went wrong!!!")
+        else:
+            self.save_as()
 
     def save_as(self):
-        pass
+        try:
+            new_file = fd.asksaveasfilename(
+                initialfile="Untitled.txt",
+                defaultextension=".txt",
+                filetypes=[("All Files", "*.*"),
+                           ("All Files", "*.txt"),
+                           ("Python file", "*.py"),
+                           ("C file", "*.c"),
+                           ("C++ file", "*.cpp"),
+                           ("Java file", "*.java"),
+                           ("Mark down files", "*.md"),
+                           ("HTML files", "*.html"),
+                           ("CSS files", "*.css"),
+                           ("JavaScript files", "*.js")
+                           ]
+            )
+            text_content = self.text.get(1.0, tk.END)
+            with open(new_file, "w") as f:
+                f.write(text_content)
+            self.filename = new_file
+            self.set_win_name(self.filename)
+        except Exception as e:
+            print("!!!Something went wrong!!!")
 
 
 class CustomText(tk.Text):
@@ -63,7 +117,7 @@ class CustomText(tk.Text):
                 args[0:2] == ("xview", "scroll") or
                 args[0:2] == ("yview", "moveto") or
                 args[0:2] == ("yview", "scroll")
-            ):
+                ):
             self.event_generate("<<Change>>", when="tail")
 
         # return what the actual widget returned
