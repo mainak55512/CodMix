@@ -3,6 +3,7 @@ from tkinter import filedialog as fd
 
 
 class CodMix(tk.Frame):
+    # Main window
     def __init__(self, *args, **kwargs):
         tk.Frame.__init__(self, *args, **kwargs)
         self.text = CustomText(self)
@@ -11,7 +12,6 @@ class CodMix(tk.Frame):
         self.filename = None
         self.vsb = tk.Scrollbar(orient="vertical", command=self.text.yview)
         self.text.configure(yscrollcommand=self.vsb.set)
-        self.text.tag_configure("bigfont", font=("Helvetica", "24", "bold"))
         self.linenumbers = TextLineNumbers(self, width=30)
         self.linenumbers.attach(self.text)
         self.menubar = MenuBar(self)
